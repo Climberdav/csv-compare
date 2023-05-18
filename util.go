@@ -1,21 +1,57 @@
 package csvcompare
 
 import (
+	"fmt"
 	"reflect"
 )
 
-func dedup(rows [][]string) [][]string {
+func dedupSlice(slice [][]string, opts *Options) [][]string {
 	cleaned := [][]string{}
-	for _, value := range rows {
-		if !sliceInSlice(value, cleaned) {
+	for i, value := range slice {
+		if opts.headers && i == 0 {
 			cleaned = append(cleaned, value)
+			// skip first line
+			continue
 		}
+		if len(opts.idxHeader) > 0 {
+			if !colsInSlice(value, cleaned, opts.idxHeader) {
+				cleaned = append(cleaned, value)
+			}
+
+		} else {
+			if !inSlice(value, cleaned, opts.headers) {
+				cleaned = append(cleaned, value)
+			}
+		}
+	}
+	if opts.revert {
+		fmt.Print("Go revert")
+		cleaned = revert(cleaned, opts.headers)
 	}
 	return cleaned
 }
 
-func sliceInSlice(row []string, list [][]string) bool {
-	for _, v := range list {
+// first array is the newer
+func dedupSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]string, error) {
+	if opts.headers {
+		if !reflect.DeepEqual(slice1[0], slice2[0]) {
+			return nil, fmt.Errorf("headers not matching : %v vs %v ", slice1[0], slice2[0])
+		}
+		// skip headers
+		slice2 = slice2[1:]
+	}
+	if len(slice2) > 0 {
+		slice1 = append(slice1, slice2...)
+	}
+	return dedupSlice(slice1, opts), nil
+}
+
+func inSlice(row []string, slice [][]string, headers bool) bool {
+	for i, v := range slice {
+		if headers && i == 0 {
+			// skip first line
+			continue
+		}
 		if reflect.DeepEqual(row, v) {
 			return true
 		}
@@ -23,22 +59,7 @@ func sliceInSlice(row []string, list [][]string) bool {
 	return false
 }
 
-func dedup2(rows [][]string, rows2 [][]string) [][]string {
-	rows = append(rows, rows2...)
-	return dedup(rows)
-}
-
-func dedupOnCol(rows [][]string, cols []int) [][]string {
-	cleaned := [][]string{}
-	for _, value := range rows {
-		if !sliceColInSlice(value, cleaned, cols) {
-			cleaned = append(cleaned, value)
-		}
-	}
-	return cleaned
-}
-
-func sliceColInSlice(row []string, list [][]string, cols []int) bool {
+func colsInSlice(row []string, list [][]string, cols []int) bool {
 	// prepare a slice of unique values to compare
 	u1 := []string{}
 	for _, c := range cols {
@@ -55,4 +76,21 @@ func sliceColInSlice(row []string, list [][]string, cols []int) bool {
 		}
 	}
 	return false
+}
+
+func revert(s [][]string, headers bool) [][]string {
+	max := len(s)
+	d := 1
+	if headers {
+		d = 0
+	}
+	var f = make([][]string, max)
+	for i, r := range s {
+		if headers && i == 0 {
+			f[i] = r
+		} else {
+			f[max-i-d] = r
+		}
+	}
+	return f
 }

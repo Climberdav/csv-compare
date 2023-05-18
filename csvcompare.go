@@ -9,8 +9,8 @@ import (
 
 // Compare 2 files and returns a map of all unique lines in both files
 // if comparedFile is empty, compares itself and deduplicate lines
-func Compare(srcFile, comparedFile string, opts Options) ([][]string, error) {
-	if !unicode.IsPunct(opts.Comma) {
+func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]string, error) {
+	if !unicode.IsPunct(opts.comma) {
 		return nil, fmt.Errorf("'opts.Comma' must be a punctuation character")
 	}
 	if srcFile == "" {
@@ -18,7 +18,6 @@ func Compare(srcFile, comparedFile string, opts Options) ([][]string, error) {
 	}
 
 	// open files
-
 	fs, err := os.Open(srcFile)
 	if err != nil {
 		return nil, fmt.Errorf("error openning file %s. err: %v", srcFile, err)
@@ -29,54 +28,52 @@ func Compare(srcFile, comparedFile string, opts Options) ([][]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading csv file %s. err: %v", srcFile, err)
 	}
-	srcCsvReader.Comma = opts.Comma
+	srcCsvReader.Comma = opts.comma
 	srcRows, err := srcCsvReader.ReadAll()
 	if err != nil {
 		return nil, fmt.Errorf("error parsing file %s. err: %v", srcFile, err)
 	}
 
-	var compRows [][]string
+	var finalSlice [][]string
 
-	if comparedFile != "" {
-		fc, err := os.Open(comparedFile)
-		if err != nil {
-			return nil, fmt.Errorf("error openning file %s. err: %v", srcFile, err)
+	if len(filesToCompare) > 0 {
+		finalSlice = dedupSlice(srcRows, opts)
+
+		for i, fToCompare := range filesToCompare {
+			fmt.Printf("comparing with file %d, %s", i, fToCompare)
+
+			var compRows [][]string
+
+			fc, err := os.Open(fToCompare)
+			if err != nil {
+				return nil, fmt.Errorf("error openning file %s. err: %v", fToCompare, err)
+			}
+			defer fc.Close()
+
+			compCsvReader := csv.NewReader(fc)
+			if err != nil {
+				return nil, fmt.Errorf("error reading csv file %s. err: %v", fToCompare, err)
+			}
+			compCsvReader.Comma = opts.comma
+
+			compRows, err = compCsvReader.ReadAll()
+			if err != nil {
+				return nil, fmt.Errorf("error parsing file %s. err: %v", fToCompare, err)
+			}
+
+			if opts.dedup {
+				compRows = dedupSlice(compRows, opts)
+			}
+
+			// todo: parse error
+			finalSlice, err = dedupSlices(finalSlice, compRows, opts)
+			if err != nil {
+				return nil, err
+			}
 		}
-		defer fc.Close()
-
-		compCsvReader := csv.NewReader(fc)
-		if err != nil {
-			return nil, fmt.Errorf("error reading csv file %s. err: %v", srcFile, err)
-		}
-		compCsvReader.Comma = opts.Comma
-
-		compRows, err = compCsvReader.ReadAll()
-		if err != nil {
-			return nil, fmt.Errorf("error parsing file %s. err: %v", srcFile, err)
-		}
-
-		if opts.Dedup {
-			compRows = dedup(compRows)
-		}
-
 	} else {
-		opts.Dedup = true
+		opts.dedup = true
+		finalSlice = dedupSlice(srcRows, opts)
 	}
-
-	if opts.Dedup {
-		srcRows = dedup(srcRows)
-	}
-
-	// find lines not present in comparedFile case
-	if comparedFile != "" {
-		return dedup2(srcRows, compRows), nil
-	} else {
-		return srcRows, nil
-	}
+	return finalSlice, nil
 }
-
-// func CompareMutliple(srcFile string, opts Options, f ...any) ([]map[string]string, error) {
-// 	var finalRows []map[string]string
-
-// 	return finalRows, nil
-// }
