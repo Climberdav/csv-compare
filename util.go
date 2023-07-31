@@ -25,7 +25,6 @@ func dedupSlice(slice [][]string, opts *Options) [][]string {
 		}
 	}
 	if opts.revert {
-		fmt.Print("Go revert")
 		cleaned = revert(cleaned, opts.headers)
 	}
 	return cleaned

@@ -1,3 +1,9 @@
+/*
+Package **csv-compare** provides un API to compare 1 or more csv file with same structure in order
+to provide a diff list of unique rows
+Different option can be provided
+See documentation
+*/
 package csvcompare
 
 import (
@@ -7,8 +13,7 @@ import (
 	"unicode"
 )
 
-// Compare 2 files and returns a map of all unique lines in both files
-// if comparedFile is empty, compares itself and deduplicate lines
+// Compare self or more files and returns a map of all unique lines
 func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]string, error) {
 	if !unicode.IsPunct(opts.comma) {
 		return nil, fmt.Errorf("'opts.Comma' must be a punctuation character")
@@ -37,22 +42,21 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 	var finalSlice [][]string
 
 	if len(filesToCompare) > 0 {
+
 		finalSlice = dedupSlice(srcRows, opts)
 
-		for i, fToCompare := range filesToCompare {
-			fmt.Printf("comparing with file %d, %s", i, fToCompare)
-
+		for _, fToCompare := range filesToCompare {
 			var compRows [][]string
 
 			fc, err := os.Open(fToCompare)
 			if err != nil {
-				return nil, fmt.Errorf("error openning file %s. err: %v", fToCompare, err)
+				return nil, fmt.Errorf("error while open file %s. err: %v", fToCompare, err)
 			}
 			defer fc.Close()
 
 			compCsvReader := csv.NewReader(fc)
 			if err != nil {
-				return nil, fmt.Errorf("error reading csv file %s. err: %v", fToCompare, err)
+				return nil, fmt.Errorf("error while reading csv file %s. err: %v", fToCompare, err)
 			}
 			compCsvReader.Comma = opts.comma
 
@@ -65,7 +69,6 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 				compRows = dedupSlice(compRows, opts)
 			}
 
-			// todo: parse error
 			finalSlice, err = dedupSlices(finalSlice, compRows, opts)
 			if err != nil {
 				return nil, err
