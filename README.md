@@ -1,5 +1,8 @@
 # CSV Compare
 
+[![Build and Test](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml/badge.svg)](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml)
+
+
 Package **csv-compare** helper provide an API to process CSV files with the same structure (columns).
 
 The process results in a list of unique rows, in reverse order.
@@ -14,5 +17,5 @@ You can compare 1 (deduplication) or more files.
 
 ## Installation
 ```bash
-go get github.com/climberdav/csv-compare
+go get github.com/Climberdav/csv-compare
 ```
