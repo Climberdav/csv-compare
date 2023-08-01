@@ -23,4 +23,4 @@ jobs:
         with:
           args: release
         env:
-          GITHUB_TOKEN: ${{secrets.CSV-COMPARE_PAT}}
+          GITHUB_TOKEN: ${{secrets.CSV_COMPARE_PAT}}
