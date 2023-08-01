@@ -9,18 +9,20 @@ jobs:
   release:
     name: New Release
     runs-on: ubuntu-latest
+    goreleaser:
+    runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Validates GO releaser config
-        uses: docker://goreleaser/goreleaser:latest
+      - uses: actions/checkout@v3
         with:
-          args: check
-
-      - name: Create release on GitHub
-        uses: docker://goreleaser/goreleaser:latest
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@v4
         with:
-          args: release
+          go-version: '1.20'
+      - uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
         env:
-          GITHUB_TOKEN: ${{secrets.CSV_COMPARE_PAT}}
+          GITHUB_TOKEN: ${{ secrets.GITHUBCSV_COMPARE_PAT_TOKEN }}
