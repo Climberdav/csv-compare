@@ -1,7 +1,6 @@
 # CSV Compare
 
-[![Build and Test](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml/badge.svg)](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml)
-
+[![Build and Test](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml/badge.svg)](https://github.com/Climberdav/csv-compare/actions/workflows/go-test-and-build.yml) [![Release](https://github.com/Climberdav/csv-compare/actions/workflows/go-release.yml/badge.svg)](https://github.com/Climberdav/csv-compare/actions/workflows/go-release.yml)
 
 Package **csv-compare** helper provide an API to process CSV files with the same structure (columns).
 
