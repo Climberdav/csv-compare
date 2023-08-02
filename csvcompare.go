@@ -49,6 +49,10 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 		if dedup {
 			opts.dedup = false
 		}
+		revert := opts.revert
+		if revert {
+			opts.revert = false
+		}
 
 		for _, fToCompare := range filesToCompare {
 			var compRows [][]string
@@ -76,6 +80,9 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 
 			if dedup {
 				opts.dedup = true
+			}
+			if revert {
+				opts.revert = true
 			}
 			finalSlice, err = dedupSlices(finalSlice, compRows, opts)
 			if err != nil {
