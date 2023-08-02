@@ -122,8 +122,8 @@ func TestCompareReturnsDiff2Revert(t *testing.T) {
 	if len(rows) != 8 {
 		t.Errorf("should return 8 lines. got=%v, len=%d", rows, len(rows))
 	}
-	if !reflect.DeepEqual(rows[6], rowBooker12) {
-		t.Errorf("line 8 should return %v got=%v", rowBooker12, rows[7])
+	if !reflect.DeepEqual(rows[6], rowJohnson81) {
+		t.Errorf("line 8 should return %v got=%v", rowJohnson81, rows[7])
 	}
 }
 
