@@ -45,10 +45,6 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 
 		finalSlice = dedupSlice(srcRows, opts)
 		// prevent slices to be mixed
-		dedup := opts.dedup
-		if dedup {
-			opts.dedup = false
-		}
 		revert := opts.revert
 		if revert {
 			opts.revert = false
@@ -76,10 +72,6 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 
 			if opts.dedup {
 				compRows = dedupSlice(compRows, opts)
-			}
-
-			if dedup {
-				opts.dedup = true
 			}
 			if revert {
 				opts.revert = true
