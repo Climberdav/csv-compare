@@ -11,7 +11,7 @@ var rowJenkins46 = []string{"jenkins46", "9346", "14ju73", "mj9346", "Mary", "Je
 // var rowJenkins46Manchester2 = []string{"jenkins46", "9346", "14ju73", "mj9346", "Mary", "Jenkins", "Engineering", "Manchester", "2016-07-10"}
 var rowGandalf00 = []string{"gandalf00", "6486", "9sdfcq", "9sqdcd", "Mithrandir", "Gandalf", "Magical", "Isengard", "2001-12-10"}
 var rowDoe80 = []string{"doe80", "6546", "65dfcsd", "5dsfcsd", "Jane", "Doe", "Marketing", "Glasgow", "2010-05-18"}
-var rowBroker12 = []string{"booker12", "9012", "12se74", "rb9012", "Rachel", "Booker", "Sales", "Manchester", "2023-10-02"}
+var rowBooker12 = []string{"booker12", "9012", "12se74", "rb9012", "Rachel", "Booker", "Sales", "Manchester", "2023-10-02"}
 var rowHead = []string{"Username", "Identifier", "One-time password", "Recovery code", "First name", "Last name", "Department", "Location", "Date"}
 
 func TestCompareWithEmptyOptions(t *testing.T) {
@@ -111,8 +111,8 @@ func TestCompareReturnsDedupRevert(t *testing.T) {
 	if !reflect.DeepEqual(rows[0], rowHead) {
 		t.Errorf("line 0 should return %v got=%v", rowHead, rows[0])
 	}
-	if !reflect.DeepEqual(rows[5], rowBroker12) {
-		t.Errorf("line 5 should return %v got=%v", rowBroker12, rows[5])
+	if !reflect.DeepEqual(rows[5], rowBooker12) {
+		t.Errorf("line 5 should return %v got=%v", rowBooker12, rows[5])
 	}
 }
 
@@ -122,8 +122,8 @@ func TestCompareReturnsDiff2Revert(t *testing.T) {
 	if len(rows) != 8 {
 		t.Errorf("should return 8 lines. got=%v, len=%d", rows, len(rows))
 	}
-	if !reflect.DeepEqual(rows[7], rowJenkins46) {
-		t.Errorf("line 8 should return %v got=%v", rowJenkins46, rows[7])
+	if !reflect.DeepEqual(rows[6], rowBooker12) {
+		t.Errorf("line 8 should return %v got=%v", rowBooker12, rows[7])
 	}
 }
 
