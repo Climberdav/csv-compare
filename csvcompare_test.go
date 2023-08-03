@@ -122,8 +122,8 @@ func TestCompareReturnsDiff2Revert(t *testing.T) {
 	if len(rows) != 8 {
 		t.Errorf("should return 8 lines. got=%v, len=%d", rows, len(rows))
 	}
-	if !reflect.DeepEqual(rows[6], rowJohnson81) {
-		t.Errorf("line 8 should return %v got=%v", rowJohnson81, rows[7])
+	if !reflect.DeepEqual(rows[2], rowJenkins46) {
+		t.Errorf("line 8 should return %v got=%v", rowJenkins46, rows[2])
 	}
 }
 
@@ -133,7 +133,7 @@ func TestCompareReturnsDiff3Revert(t *testing.T) {
 	if len(rows) != 10 {
 		t.Errorf("should return 10 lines. got=%v, len=%d", rows, len(rows))
 	}
-	if !reflect.DeepEqual(rows[9], rowDoe80) {
-		t.Errorf("line 10 should return %v got=%v", rowDoe80, rows[9])
+	if !reflect.DeepEqual(rows[1], rowGandalf00) {
+		t.Errorf("line 10 should return %v got=%v", rowGandalf00, rows[1])
 	}
 }
