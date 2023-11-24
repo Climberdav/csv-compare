@@ -11,9 +11,7 @@ func unique(slice [][]string, opts *Options) [][]string {
 	seen := map[string]bool{}
 
 	// Create a map to store unique lines
-	cleaned := [][]string{}
-
-	// go throw each lines
+	var cleaned [][]string // go throw each lines
 	for i, line := range slice {
 		if i == 0 && opts.headers {
 			// skip first header line
@@ -53,8 +51,7 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 	seen := map[string]int{}
 
 	// Create a map to store unique lines
-	cleaned := [][]string{}
-
+	var cleaned [][]string
 	// go throw each lines
 	for i, line := range slice1 {
 		if i == 0 && opts.headers {
@@ -76,7 +73,7 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 
 	for _, line := range slice1 {
 		key := strings.Join(line, "_")
-		if v, _ := seen[key]; v == 1 {
+		if v := seen[key]; v == 1 {
 			cleaned = append(cleaned, line)
 		}
 	}
@@ -89,17 +86,17 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 }
 
 func revert(s [][]string, headers bool) [][]string {
-	max := len(s)
+	maximum := len(s)
 	d := 1
 	if headers {
 		d = 0
 	}
-	var f = make([][]string, max)
+	var f = make([][]string, maximum)
 	for i, r := range s {
 		if headers && i == 0 {
 			f[i] = r
 		} else {
-			f[max-i-d] = r
+			f[maximum-i-d] = r
 		}
 	}
 	return f
