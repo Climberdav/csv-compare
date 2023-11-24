@@ -77,8 +77,8 @@ func TestDedup(t *testing.T) {
 			sliceIn2:      [][]string{{"rc1", "rc2", "rc3"}, {"rc4", "rc5", "rc6"}},
 			line:          []string{"rc4", "rc5", "rc6"},
 			lineHeaders:   []string{},
-			lenAttendee:   2,
-			lineToCompare: 2,
+			lenAttendee:   1,
+			lineToCompare: 1,
 			opts:          optsWithoutHeaders,
 			errAttendee:   false,
 		},
@@ -88,8 +88,8 @@ func TestDedup(t *testing.T) {
 			sliceIn2:      [][]string{{"h1", "h2", "h3"}, {"rc1", "rc2", "rc3"}, {"rc4", "rc5", "rc6"}},
 			line:          []string{"rc4", "rc5", "rc6"},
 			lineHeaders:   []string{"h1", "h2", "h3"},
-			lenAttendee:   3,
-			lineToCompare: 3,
+			lenAttendee:   2,
+			lineToCompare: 2,
 			opts:          optsWithHeaders,
 		},
 		{
@@ -109,8 +109,8 @@ func TestDedup(t *testing.T) {
 			sliceIn2:      [][]string{},
 			line:          []string{"rc4", "rc5", "rc6"},
 			lineHeaders:   []string{},
-			lenAttendee:   2,
-			lineToCompare: 2,
+			lenAttendee:   4,
+			lineToCompare: 3,
 			opts:          optsColWithoutHeaders,
 			errAttendee:   false,
 		},
@@ -120,8 +120,8 @@ func TestDedup(t *testing.T) {
 			sliceIn2:      [][]string{},
 			line:          []string{"rc4", "rc5", "rc6"},
 			lineHeaders:   []string{"h1", "h2", "h3"},
-			lenAttendee:   3,
-			lineToCompare: 3,
+			lenAttendee:   5,
+			lineToCompare: 4,
 			opts:          optsColWithHeaders,
 			errAttendee:   false,
 		},
@@ -129,9 +129,9 @@ func TestDedup(t *testing.T) {
 			name:          "Test 11",
 			sliceIn1:      [][]string{{"rc1", "rc2", "rc3"}, {"rc1", "rc3", "rc3"}, {"rc4", "rc5", "rc6"}, {"rc4", "rc8", "rc6"}},
 			sliceIn2:      [][]string{},
-			line:          []string{"rc4", "rc5", "rc6"},
+			line:          []string{"rc1", "rc3", "rc3"},
 			lineHeaders:   []string{},
-			lenAttendee:   2,
+			lenAttendee:   4,
 			lineToCompare: 2,
 			opts:          optsColWithoutHeaders,
 			errAttendee:   false,
@@ -140,9 +140,9 @@ func TestDedup(t *testing.T) {
 			name:          "Test 12",
 			sliceIn1:      [][]string{{"h1", "h2", "h3"}, {"rc1", "rc2", "rc3"}, {"rc1", "rc3", "rc3"}, {"rc4", "rc5", "rc6"}, {"rc4", "rc8", "rc6"}},
 			sliceIn2:      [][]string{},
-			line:          []string{"rc4", "rc5", "rc6"},
+			line:          []string{"rc1", "rc3", "rc3"},
 			lineHeaders:   []string{"h1", "h2", "h3"},
-			lenAttendee:   3,
+			lenAttendee:   5,
 			lineToCompare: 3,
 			opts:          optsColWithHeaders,
 			errAttendee:   false,
@@ -167,9 +167,9 @@ func TestDedup(t *testing.T) {
 		var r [][]string
 		var err error
 		if len(tt.sliceIn2) == 0 {
-			r = dedupSlice(tt.sliceIn1, tt.opts)
+			r = unique(tt.sliceIn1, tt.opts)
 		} else {
-			r, err = dedupSlices(tt.sliceIn1, tt.sliceIn2, tt.opts)
+			r, err = uniqueSlices(tt.sliceIn1, tt.sliceIn2, tt.opts)
 		}
 		if tt.errAttendee && err == nil {
 			t.Errorf("%s should return an error. got=%v", tt.name, r)

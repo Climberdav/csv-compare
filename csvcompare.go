@@ -13,7 +13,10 @@ import (
 	"unicode"
 )
 
-// Compare self or more files and returns a map of all unique lines
+// Compare self or more files and returns a map of all unique lines.
+// When used whi one file, returned finalSlice will have uniques rows
+// When used with 2 or more files, if a line is present 2 files,
+// line will not be in the result slice
 func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]string, error) {
 	if !unicode.IsPunct(opts.comma) {
 		return nil, fmt.Errorf("'opts.Comma' must be a punctuation character")
@@ -47,11 +50,10 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 		if revert {
 			opts.revert = false
 		}
-		finalSlice = dedupSlice(srcRows, opts)
-
+		finalSlice = unique(srcRows, opts)
+		var compRows [][]string
 		for i, fToCompare := range filesToCompare {
-			var compRows [][]string
-
+			var compRowsFile [][]string
 			fc, err := os.Open(fToCompare)
 			if err != nil {
 				return nil, fmt.Errorf("error while open file %s. err: %v", fToCompare, err)
@@ -64,25 +66,32 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 			}
 			compCsvReader.Comma = opts.comma
 
-			compRows, err = compCsvReader.ReadAll()
+			compRowsFile, err = compCsvReader.ReadAll()
 			if err != nil {
 				return nil, fmt.Errorf("error parsing file %s. err: %v", fToCompare, err)
 			}
 
 			if opts.dedup {
-				compRows = dedupSlice(compRows, opts)
+				compRowsFile = unique(compRowsFile, opts)
 			}
-			if revert && i == len(filesToCompare)-1 {
-				opts.revert = true
+			if opts.headers && i != 0 {
+				compRowsFile = compRowsFile[1:]
 			}
-			finalSlice, err = dedupSlices(finalSlice, compRows, opts)
-			if err != nil {
-				return nil, err
-			}
+
+			compRows = append(compRows, compRowsFile...)
+
 		}
+		if revert {
+			opts.revert = true
+		}
+		finalSlice, err = uniqueSlices(finalSlice, compRows, opts)
+		if err != nil {
+			return nil, err
+		}
+
 	} else {
 		opts.dedup = true
-		finalSlice = dedupSlice(srcRows, opts)
+		finalSlice = unique(srcRows, opts)
 	}
 	return finalSlice, nil
 }
