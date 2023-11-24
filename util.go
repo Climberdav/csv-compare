@@ -20,7 +20,7 @@ func unique(slice [][]string, opts *Options) [][]string {
 			continue
 		}
 		//Create a unique key for the line
-		key := getHash(line)
+		key := getHash(line, opts)
 
 		// If key is unique, add it
 		if _, ok := seen[key]; !ok {
@@ -62,7 +62,7 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 		}
 		//Create a unique key for the line
 		// md5 create a shorter key, cells can have multiple line
-		key := getHash(line)
+		key := getHash(line, opts)
 
 		// If key is unique, add it
 		_, ok := seen[key]
@@ -74,7 +74,7 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 	}
 
 	for _, line := range slice1 {
-		key := getHash(line)
+		key := getHash(line, opts)
 		if v := seen[key]; v == 1 {
 			cleaned = append(cleaned, line)
 		}
@@ -87,8 +87,16 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 	return unique(cleaned, opts), nil
 }
 
-func getHash(line []string) string {
+func getHash(line []string, options *Options) string {
 	hash := md5.New()
+	if len(options.idxHeader) > 0 {
+		var newLine []string
+		for _, i := range options.idxHeader {
+			newLine = append(newLine, line[i])
+		}
+		line = newLine
+	}
+
 	sum := hash.Sum([]byte(strings.Join(line, "_")))
 	return fmt.Sprintf("%x", sum)
 }
