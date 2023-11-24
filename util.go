@@ -1,6 +1,7 @@
 package csvcompare
 
 import (
+	"crypto/md5"
 	"fmt"
 	"reflect"
 	"strings"
@@ -19,7 +20,7 @@ func unique(slice [][]string, opts *Options) [][]string {
 			continue
 		}
 		//Create a unique key for the line
-		key := strings.Join(line, "_")
+		key := getHash(line)
 
 		// If key is unique, add it
 		if _, ok := seen[key]; !ok {
@@ -60,7 +61,8 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 			continue
 		}
 		//Create a unique key for the line
-		key := strings.Join(line, "_")
+		// md5 create a shorter key, cells can have multiple line
+		key := getHash(line)
 
 		// If key is unique, add it
 		_, ok := seen[key]
@@ -72,7 +74,7 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 	}
 
 	for _, line := range slice1 {
-		key := strings.Join(line, "_")
+		key := getHash(line)
 		if v := seen[key]; v == 1 {
 			cleaned = append(cleaned, line)
 		}
@@ -83,6 +85,12 @@ func uniqueSlices(slice1 [][]string, slice2 [][]string, opts *Options) ([][]stri
 	}
 
 	return unique(cleaned, opts), nil
+}
+
+func getHash(line []string) string {
+	hash := md5.New()
+	sum := hash.Sum([]byte(strings.Join(line, "_")))
+	return fmt.Sprintf("%x", sum)
 }
 
 func revert(s [][]string, headers bool) [][]string {

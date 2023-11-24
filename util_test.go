@@ -158,6 +158,19 @@ func TestDedup(t *testing.T) {
 			opts:          optsWithoutHeadersNoRevert,
 			errAttendee:   false,
 		},
+		{
+			name: "Test 14 - multiline cells",
+			sliceIn1: [][]string{{"rc1", "rc2", "rc3"}, {"rc1", "rc3", "rc3\nmulitline\r\nmultineline"}, {"rc4",
+				"rc5", "rc6"},
+				{"rc4", "rc8", "rc6"}},
+			sliceIn2:      [][]string{},
+			line:          []string{"rc1", "rc3", "rc3\nmulitline\r\nmultineline"},
+			lineHeaders:   []string{},
+			lenAttendee:   4,
+			lineToCompare: 2,
+			opts:          optsWithoutHeadersNoRevert,
+			errAttendee:   false,
+		},
 	}
 
 	for _, tt := range tests {
