@@ -103,7 +103,9 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 	if opts.headers {
 		nbLineFinal--
 	}
+	rate := 100.0 * (float64(nbLineFinal*100.0) / float64(nbLineSrc*100.0))
+	rate = math.Round(rate*100) / 100
 	log.Printf("There are %d lines left out of the %d. %v%% deduplication.", nbLineFinal, nbLineSrc,
-		math.Round(100*float64(nbLineFinal)/float64(nbLineSrc)))
+		rate)
 	return finalSlice, nil
 }
