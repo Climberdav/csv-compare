@@ -9,6 +9,8 @@ package csvcompare
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
+	"math"
 	"os"
 	"unicode"
 )
@@ -40,6 +42,10 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 	srcRows, err := srcCsvReader.ReadAll()
 	if err != nil {
 		return nil, fmt.Errorf("error parsing file %s. err: %v", srcFile, err)
+	}
+	nbLineSrc := len(srcRows)
+	if opts.headers {
+		nbLineSrc--
 	}
 
 	var finalSlice [][]string
@@ -93,5 +99,11 @@ func Compare(srcFile string, opts *Options, filesToCompare ...string) ([][]strin
 		opts.dedup = true
 		finalSlice = unique(srcRows, opts)
 	}
+	nbLineFinal := len(finalSlice)
+	if opts.headers {
+		nbLineFinal--
+	}
+	log.Printf("There are %d lines left out of the %d. %v%% deduplication.", nbLineFinal, nbLineSrc,
+		math.Round(100*float64(nbLineFinal)/float64(nbLineSrc)))
 	return finalSlice, nil
 }
